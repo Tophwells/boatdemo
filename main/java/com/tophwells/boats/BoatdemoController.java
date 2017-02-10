@@ -34,11 +34,13 @@ public class BoatdemoController {
 
 			PreparedStatement preparedStatement = connection.prepareStatement(sql);
 			ResultSet resultSet = preparedStatement.executeQuery();
-			for(resultSet.first(); !resultSet.isAfterLast();resultSet.next())
+			//resultSet.beforeFirst();
+			resultSet.next();
+			for(; !resultSet.isAfterLast();resultSet.next())
 			{
-				int id = resultSet.getInt(0);
-				String name = resultSet.getString(1);
-				sB.append(String.format("ID: %1, Name: %2,<br/>",id,name));
+				int id = resultSet.getInt("ID");
+				String name = resultSet.getString("BoatName");
+				sB.append(String.format("ID: %1$d, Name: %2$s,<br/>",id,name));
 			}
 			return sB.toString();
 		} catch (SQLException e) {
