@@ -19,11 +19,6 @@ public class BoatdemoController {
 	@Autowired
 	public DataSource dataSource;
 	
-	@GetMapping("/")
-	public String helloWorld() {
-		return "Hello World!";
-	}
-	
 	@GetMapping("/database")
 	public String read() {
 		StringBuilder sB = new StringBuilder();
