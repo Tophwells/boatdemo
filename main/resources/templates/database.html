@@ -1,9 +1,27 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Database</title>
+        <title>Boat Database</title>
+        <link rel ="stylesheet" type="text/css" href="main.css"/>
     </head>
     <body>
-    	<h1>The database will be displayed here.</h1>
+    	<div class = "container">
+	    	<h1>Database View</h1>
+	    	<table>
+	    		<tr>
+	    			<th> ID </th>
+	    			<th> Name </th>
+	    		</tr>
+	    		<tr th:each="boat:${boats}">
+					<td th:text="${boat.id}"></td>
+					<td th:text="${boat.name}"></td>
+				</tr>
+			</table>
+	    	<form th:action="@{/database}" method="post">
+	            <div><label> New entry : <input type="text" name="boatname"/> </label></div>
+	            <div><input type="submit" value="Add"/></div>
+	        </form>
+	        <p><a href="/">Return to welcome page</a></p>
+        </div>
     </body>
 </html>

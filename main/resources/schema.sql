@@ -1,5 +1,4 @@
 CREATE TABLE Boats(
-	ID int NOT NULL,
+	ID IDENTITY,
 	BoatName varchar(8000) NULL,
-PRIMARY KEY (ID)
 );

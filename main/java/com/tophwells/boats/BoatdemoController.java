@@ -5,23 +5,34 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-@RestController
+@Controller
 public class BoatdemoController {
 
 	@Autowired
 	public DataSource dataSource;
 	
 	@GetMapping("/database")
-	public String read() {
-		StringBuilder sB = new StringBuilder();
+	public String getDatabase(Model model) {
+		List<Boat> boats = readDatabase();
+		model.addAttribute("boats",boats);
+		return "database";
+	}
+	
+	private List<Boat> readDatabase()
+	{
+		List<Boat> boats = new ArrayList<Boat>();
 		try {
 			Connection connection = dataSource.getConnection();
 			
@@ -29,18 +40,43 @@ public class BoatdemoController {
 
 			PreparedStatement preparedStatement = connection.prepareStatement(sql);
 			ResultSet resultSet = preparedStatement.executeQuery();
-			//resultSet.beforeFirst();
+			//resultSet.beforeFirst(); //not supported by database
 			resultSet.next();
 			for(; !resultSet.isAfterLast();resultSet.next())
 			{
 				int id = resultSet.getInt("ID");
 				String name = resultSet.getString("BoatName");
-				sB.append(String.format("ID: %1$d, Name: %2$s,<br/>",id,name));
+				boats.add(new Boat(id,name));
 			}
-			return sB.toString();
+			return boats;
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return "An error occurred at " + e.getStackTrace().toString() + "<br/>" + e.getMessage();
+			return boats;
+		}
+	}
+	
+	@PostMapping("/database")
+	public String postDatabase(@RequestParam("boatname") String boatName, Model model)
+	{
+		addBoat(boatName);
+		List<Boat> boats = readDatabase();
+		model.addAttribute("boats",boats);
+		return "database";
+	}
+
+	private void addBoat(String name) {
+		try {
+			Connection connection = dataSource.getConnection();
+			
+			String sql = "INSERT INTO Boats (ID,BoatName) VALUES (NULL,?)";
+			
+			PreparedStatement preparedStatement = connection.prepareStatement(sql);
+			preparedStatement.setString(1, name);
+			preparedStatement.execute();
+			return;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return;
 		}
 	}
 
